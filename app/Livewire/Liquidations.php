@@ -49,11 +49,13 @@ class Liquidations extends Component
         $this->resetValues();
         $this->getTeacherPaymentSetting();
 
-        // Obtener las clases del profesor
+        // Obtener las clases del profesor que haya marcado como dictadas y que no cuente con pagos registrados
         $lessonsIds = DB::table('presences as p')
         ->join('schedules as s', 'p.schedule_id', '=', 's.id')
+        ->join('teacher_payments as tp', 'tp.lesson_id', '=', 's.id') // Cambio aquí
         ->where('p.teacher_id', $this->teacherId)
-        ->select('s.lesson_id', DB::raw('count(s.lesson_id) as lesson_count'))
+        ->where('tp.teacher_id', '!=', $this->teacherId)
+        ->select('s.lesson_id', DB::raw('count(*) as lesson_count'))
         ->groupBy('s.lesson_id')
         ->get();
 
@@ -147,25 +149,26 @@ class Liquidations extends Component
     //funcion para calcular el total a pagar por porcentaje
     public function calculateTotalByPercentage()
     {
+        $infoLesson = DB::table('presences as p')
+        ->join('schedules as s', 'p.schedule_id', '=', 's.id')
+        ->join('lessons as l', 's.lesson_id', '=', 'l.id')
+        ->where('l.id', $this->lessonId)
+        ->select('l.id', DB::raw('count(l.id) as lesson_count'))
+        ->groupBy('l.id')
+        ->get();
+
+        $lesson_count = $infoLesson->pluck('lesson_count')->first();
+        $schedule_count = $this->infoShedule->pluck('schedule_count')->first();
+
         //recorre los profesores de la clase y valida si son mas de uno
         if (count($this->teachersLesson) > 1) {
-            $infoLesson = DB::table('presences as p')
-            ->join('schedules as s', 'p.schedule_id', '=', 's.id')
-            ->join('lessons as l', 's.lesson_id', '=', 'l.id')
-            ->where('l.id', $this->lessonId)
-            ->select('l.id', DB::raw('count(l.id) as lesson_count'))
-            ->groupBy('l.id')
-            ->get();
-
-            $lesson_count = $infoLesson->pluck('lesson_count')->first();
-            $schedule_count = $this->infoShedule->pluck('schedule_count')->first();
-
             //valida que todas las clases dictadas sean iguales a la cantidad de horarios de la clase
             if($lesson_count == $schedule_count){
                 //habilitar boton para liquidar
                 $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
             }else{
                 //deshabilitar boton para liquidar
+                //alerta para indicar que no se han marcado las clases dictadas
                 $this->totalPagar = 0;
             }
         } else {
@@ -203,6 +206,7 @@ class Liquidations extends Component
         $this->teachersLesson = null;
         $this->teacherSetting = null;
         $this->isPayShared = false;
+        //clases de estudiantes
     }
 
     //funcion para capturar el evento de cambio de toggle clase compartida
