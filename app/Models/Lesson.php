@@ -9,6 +9,7 @@ use App\Models\Inscripciones;
 use App\Models\Academy;
 use App\Models\TeacherLesson;
 use Illuminate\Support\Facades\DB;  // Asegúrate de importar DB
+use App\Models\Service;
 
 class Lesson extends Model
 {

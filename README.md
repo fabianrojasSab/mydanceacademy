@@ -117,7 +117,7 @@ Algunos de los comandos más utilizados en el proyecto:
 
 - **Generar un nuevo controlador**:
     ```bash
-    php artisan make:controller NombreDelControlador
+    php artisan make:livewire NombreController
     ```
 
 - **Generar un nuevo modelo**:

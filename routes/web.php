@@ -11,6 +11,7 @@ use App\Livewire\Roles;
 use App\Livewire\Dashboard;
 use App\Models\Role;
 use App\Livewire\Schedules;
+use App\Livewire\Liquidations;
 
 
 
@@ -76,6 +77,11 @@ Route::middleware([
 // Prefijo para los roles
     Route::prefix('rl')->group(function () {
         Route::get('r', Roles::class)->name('rl.r'); 
+    });
+
+// Prefijo para las liquidaciones
+    Route::prefix('lqd')->group(function () {
+        Route::get('r', Liquidations::class)->name('lqd.r'); 
     });
 
 });
