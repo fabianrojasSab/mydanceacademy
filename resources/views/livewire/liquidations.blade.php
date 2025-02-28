@@ -51,103 +51,123 @@
         
         <section class="lg:col-span-2 col-1 h-auto p-4">
             <div class="grid lg:grid-cols-2 grid-cols-1 md:container md:mx-auto">
-                <section class="lg:col-auto col-1 p-4">
-                    <div class="h-full pt-6 px-2 rounded-lg bg-white">
-                        <div class="rounded-t mb-0 px-4 py-3 border-0">
-                            <div class="flex flex-wrap items-center">
-                                <div class="relative w-full px-4 max-w-full flex-grow flex-1">
-                                    <h3 class="font-semibold text-base text-blueGray-700">Informacion de pago</h3>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <div class="relative overflow-x-auto">
-                            <!-- informacion de los parametros de pago -->
-                            @if($teacherSetting)
-                                <div class="mt-4 text-lg font-semibold">
-                                    Tipo liquidacion: <span class="text-green">
-                                    @foreach ($teacherSetting as $setting)
-                                        {{ $setting->param_name }}
-                                    @endforeach
-                                    </span>
-                                </div>
-                                <div class="mt-4 text-lg font-semibold">
-                                    Valor: <span class="text-green">
-                                    @foreach ($teacherSetting as $setting)
-                                    {{ $setting->param_value }}
-                                    @endforeach
-                                    </span>
-                                </div>
-                            @else
-                                <div class="mt-4 text-lg font-semibold">
-                                    Tipo liquidacion:
-                                </div>
-                                <div class="mt-4 text-lg font-semibold">
-                                    Valor:
-                                </div>
-                            @endif
-                            <!-- Informacion de la clase -->
-                            <div class="mt-4 text-lg font-semibold">
-                                Clase: <span class="text-green-600">
-                                    @if($infoLesson)
-                                        @foreach ( $infoLesson as $info)
-                                            {{ $info->name }}
-                                        @endforeach
+                <section class="lg:col-auto col-1 p-4 bg-white shadow-md p-4 rounded-lg border">
+                        <h3 class="text-lg font-semibold mb-2">Informacion de pago</h3>
+                        <!-- informacion de los parametros de pago -->
+                        @if($teacherSetting)
+                            <div class="text-gray-600 text-sm">
+                                Tipo de Liquidación:
+                                <span class="text-green">
+                                @foreach ($teacherSetting as $setting)
+                                    @if ($setting->param_name === 'Porcentaje')
+                                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                                            Valor en porcentaje
+                                        </span>
+                                    @elseif ($setting->param_name === 'Sueldo fijo')
+                                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                            Sueldo fijo mensual
+                                        </span>
                                     @else
-                                        No hay clase seleccionada
+                                        <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                                            No definido
+                                        </span>
                                     @endif
+                                @endforeach
                                 </span>
                             </div>
-                            <!-- Campo para profesores -->
-                            <div class="mt-4 text-lg font-semibold">
-                                Profesores:
-                                @if ($teachersLesson)
-                                    @foreach ($teachersLesson as $teacher)
-                                        <span class="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">
-                                            {{ $teacher ? $teacher['name'] : 'Profesor no encontrado' }}
+                            <div class="mb-4">
+                                    {{ $setting->param_name === 'Porcentaje' ? 'Porcentaje de pago:' : 'Monto base:' }}
+                                    {{ $setting->param_name === 'Porcentaje' ? ($setting->param_value . '(%)') : ('$' . number_format($setting->param_value, 2)) }}
+                            </div>
+                        @else
+                            <div class="text-gray-600 text-sm">
+                                Tipo liquidacion:
+                            </div>
+                        @endif
+
+                        <!-- Informacion de la clase -->
+                        <div class="mt-4 text-lg font-semibold">
+                            Clase: 
+                            <span class="text-green-600">
+                                @if($infoLesson)
+                                    @foreach ( $infoLesson as $info)
+                                        <!-- Clase seleccionada con badge verde -->
+                                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-md">
+                                            {{ $info->name }}
                                         </span>
                                     @endforeach
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" wire:change="toggleIsPayShared" wire:model="isPayShared" class="sr-only peer">
-                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
-                                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Clase compartida</span>
-                                    </label>
+                                @else
+                                    <!-- Mensaje de advertencia si no hay clase -->
+                                    <span class="text-red-500 font-medium flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-9-3a1 1 0 012 0v3a1 1 0 01-2 0V7zm1 5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                                        </svg>
+                                        No hay clase seleccionada
+                                    </span>
                                 @endif
-                            </div>
-                            <!-- Cantidad de clases dictadas -->
-                            <div class="mt-4 text-lg font-semibold">
-                                Cantidad de dias: <span class="text-green-600">
-                                    @if($infoLesson)
-                                        @foreach ( $infoLesson as $info)
-                                            {{ $info->lesson_count }}
-                                        @endforeach
-                                        /
-                                        @foreach ( $infoShedule as $info)
-                                            {{ $info->schedule_count }}
-                                        @endforeach
-                                    @else
-                                        0
-                                    @endif
+                            </span>
+                        </div>
+
+                        <!-- Campo para profesores -->
+                        <div class="mt-4 text-lg font-semibold">
+                            Profesores:
+                            @if ($teachersLesson)
+                                @foreach ($teachersLesson as $teacher)
+                                    <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-sm">
+                                        {{ $teacher ? $teacher['name'] : 'Profesor no encontrado' }}
+                                    </span>
+                                @endforeach
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" wire:change="toggleIsPayShared" wire:model="isPayShared" class="toggle-checkbox">
+                                    <label for="shared" class="ml-2 text-sm text-gray-700">Clase compartida</label>
+                                </label>
+                            @endif
+                        </div>
+
+                        <!-- Cantidad de clases dictadas -->
+                        <div class="mt-4 text-lg font-semibold flex items-center">
+                            Días trabajados: 
+                            <span class="text-xl font-bold text-blue-600"> 
+                                @if($infoLesson)
+                                    @foreach ( $infoLesson as $info)
+                                        {{ $info->lesson_count }}
+                                    @endforeach
+                                    /
+                                    @foreach ( $infoShedule as $info)
+                                        {{ $info->schedule_count }}
+                                    @endforeach
+                                @else
+                                    0
+                                @endif
+                            </span>
+                            <div x-data="{ open: false }" class="relative ml-2">
+                                <span @mouseover="open = true" @mouseleave="open = false" class="cursor-pointer text-gray-500">
+                                    ℹ️
                                 </span>
-                            </div>
-                            <!-- Campos para ingresar valor adicional -->
-                            <div class="relative z-0 w-full mb-5 group">
-                                <input type="text" wire:model="adittionalValue" wire:change="updateTotal" name="valorAdicional" id="valorAdicional" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                                <label for="valorAdicional" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Valor Adicional</label>
-                            </div>
-                            <!-- Total a Pagar -->
-                            <div class="mt-4 text-lg font-semibold">
-                                Total a Pagar: <span class="text-green-600">$
-                                    @if($totalPagar)
-                                        {{ number_format($totalPagar, 2) }}
-                                    @else
-                                        0.00
-                                    @endif
-                                </span>
+                                <div x-show="open" class="absolute left-0 mt-2 w-64 bg-white text-sm text-gray-700 p-2 rounded shadow-lg">
+                                    Indica los días en los que se impartieron clases frente al total de días programados.
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- Campos para ingresar valor adicional -->
+                        <div class="mt-4 text-lg font-semibold">
+                            <input type="text" wire:model="adittionalValue" wire:change="updateTotal" name="valorAdicional" id="valorAdicional" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                            <p class="mt-2 text-sm text-gray-600">Valor Adicional</p>
+                        </div>
+
+                        <!-- Total a Pagar -->
+                        <div class="mt-4 text-lg font-semibold">
+                            Total a Pagar: <span class="text-green-600">$
+                                @if($totalPagar)
+                                    {{ number_format($totalPagar, 2) }}
+                                @else
+                                    0.00
+                                @endif
+                            </span>
+                        </div>
                 </section>
+
                 <section class="lg:col-auto col-1 p-4">
                     <div class="h-full pt-6 px-2 rounded-lg bg-white">
                         <div class="rounded-t mb-0 px-4 py-3 border-0">
@@ -191,7 +211,7 @@
                             </table>
                             <!-- Total a Pagar -->
                             <div class="mt-4 text-lg font-semibold">
-                                Total Pagos de estudiantes: <span class="text-green-600">$
+                                💰Total Pagos de estudiantes: <span class="bg-green-100 text-green-700 px-4 py-2 rounded-md font-bold text-lg flex items-center">$
                                     @if($totalByStudents)
                                         {{ number_format($totalByStudents, 2) }}
                                     @else
