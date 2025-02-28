@@ -52,6 +52,8 @@ return new class extends Migration
             $table->foreignId('payment_method_id')->references('id')->on('payment_methods');
             $table->integer('amount');
             $table->date('payment_date');
+            $table->bigInteger('lesson_id')->unsigned();
+            $table->foreign('lesson_id')->references('id')->on('lessons');
         });
     }
 
