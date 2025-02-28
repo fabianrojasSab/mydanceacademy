@@ -52,9 +52,12 @@ class Liquidations extends Component
         // Obtener las clases del profesor que haya marcado como dictadas y que no cuente con pagos registrados
         $lessonsIds = DB::table('presences as p')
         ->join('schedules as s', 'p.schedule_id', '=', 's.id')
-        ->join('teacher_payments as tp', 'tp.lesson_id', '=', 's.id') // Cambio aquí
+        ->leftjoin('teacher_payments as tp', function($join) {
+                    $join->on('tp.lesson_id', '=', 's.lesson_id')
+                        ->on('tp.teacher_id', '=', 's.teacher_id'); // Segunda condición con AND
+                    })// Relación con los pagos de los profesores
         ->where('p.teacher_id', $this->teacherId)
-        ->where('tp.teacher_id', '!=', $this->teacherId)
+        ->whereNull('tp.teacher_id')
         ->select('s.lesson_id', DB::raw('count(*) as lesson_count'))
         ->groupBy('s.lesson_id')
         ->get();
