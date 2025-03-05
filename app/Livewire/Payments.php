@@ -23,6 +23,7 @@ class Payments extends Component
     public $paymentId;
     public $students;
     public $lesson_id;
+    public $service_id;
 
     public $lessonsStudent;
     public $paymentMethods;
@@ -103,7 +104,7 @@ class Payments extends Component
                 'payment_date' => $this->date,
                 'amount' => $this->amount,
                 'student_id' => $this->student_id,
-                'service_id' => $this->lesson_id
+                'service_id' => $this->service_id
             ]);
 
             DB::commit();
@@ -156,6 +157,7 @@ class Payments extends Component
         $lesson = Lesson::where('id', $this->lesson_id)
         ->with('services')
         ->first();
+        $this->service_id = $lesson->services->first()->id;
         $this->name = $lesson->name;
         $this->description = $lesson->description;
         $this->amount = $lesson->services->first()->price;

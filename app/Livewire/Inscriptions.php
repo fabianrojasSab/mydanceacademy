@@ -39,7 +39,7 @@ class Inscriptions extends Component
     public function delete($id)
     {
         try {
-            ClaseUser::where('id',$id)->delete();
+            StudentLesson::where('id',$id)->delete();
             return $this->redirect('/ncp/r',navigate:true); 
         } catch (\Exception $th) {
             dd($th);
