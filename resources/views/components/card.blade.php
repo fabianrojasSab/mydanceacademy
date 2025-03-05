@@ -1,4 +1,4 @@
-<div class="max-w-sm mt-5 bg-white shadow-lg p-6 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-xl transition rounded-xl cursor-pointer">
+<div class="max-w-sm mt-5 bg-white shadow-lg p-6 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-xl transition rounded-xl cursor-pointer animate__animated animate__fadeInUp">
     <div class="grid lg:grid-cols-3 grid-cols-1 md:container md:mx-auto">
         <div class="lg:col-span-2 col-1 h-auto ">
             <a href="#">

@@ -1,4 +1,9 @@
 <div class="grid lg:grid-cols-3 grid-cols-1 md:container md:mx-auto">
+    <div x-data="{ mostrar: false, mensaje: '' }" x-init="@this.on('mostrarAlerta', e => { mensaje = e.mensaje; mostrar = true; setTimeout(() => mostrar = false, 3000); })">
+        <div x-show="mostrar" class="bg-green-500 text-white p-3 rounded shadow">
+            <p x-text="mensaje"></p>
+        </div>
+    </div>
     <section class="lg:col-span-3 col-1 p-4">
         <div class="flex justify-end">
             <a href="{{ route('dashboard') }}" class="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
@@ -6,10 +11,8 @@
             </a>
         </div>
     </section>
-
     @hasanyrole('Administrador|SuperAdmin')
         <!-- Contenido para administradores -->
-        <section class="lg:col-auto col-1 p-4">
             <form class="pt-6 px-9 pb-6 rounded-lg bg-white">
                 <div class="mb-7">
                     <h1 class="text-2xl text-center font-semibold text-gray-900 dark:text-white">Liquidacion de profesores</h1>
@@ -53,6 +56,28 @@
             <div class="grid lg:grid-cols-2 grid-cols-1 md:container md:mx-auto">
                 <section class="lg:col-auto col-1 p-4 bg-white shadow-md p-4 rounded-lg border">
                         <h3 class="text-lg font-semibold mb-2">Informacion de pago</h3>
+                        <!-- variable $this->monthliquidation convertida a formato mes -->
+                        <div class="text-gray-600 text-sm">
+                            Mes de liquidación:
+                            <span class="text-green">
+                                @if($monthLiquidation)
+                                    {{ \Carbon\Carbon::create()->month($monthLiquidation)->translatedFormat('F') }}
+                                @else
+                                    No definido
+                                @endif
+                            </span>
+                        </div>
+                        <!-- variable $this->monthliquidation convertida a formato año -->
+                        <div class="text-gray-600 text-sm">
+                            Año de liquidación:
+                            <span class="text-green"> 
+                                @if($yearLiquidation)
+                                    {{ $yearLiquidation }}
+                                @else
+                                    No definido
+                                @endif
+                            </span>
+                        </div> 
                         <!-- informacion de los parametros de pago -->
                         @if($teacherSetting)
                             <div class="text-gray-600 text-sm">
@@ -305,7 +330,6 @@
             </div>
         </section> 
     @endhasanyrole
-
     <!-- Modal de Carga -->
     <div x-data="{ loading: false }" x-show="loading" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75">
         <div class="bg-white p-5 rounded-lg shadow-lg text-center">

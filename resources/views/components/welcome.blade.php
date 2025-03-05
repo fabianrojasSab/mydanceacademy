@@ -1,4 +1,4 @@
-<div class="grid lg:grid-cols-2 dm:grid-cols-2 sm:grid-cols-2 p-6 bg-white border-b border-gray-200">
+<div class="grid lg:grid-cols-2 dm:grid-cols-2 sm:grid-cols-2 p-6 bg-white border-b border-gray-200 items-center justify-center">
     @if(auth()->user()->state_id == '1')
         @role('Profesor')
             <!-- Contenido para profesores -->
