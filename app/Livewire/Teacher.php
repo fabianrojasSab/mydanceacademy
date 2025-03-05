@@ -74,8 +74,9 @@ class Teacher extends Component
                 'phone' => $this->phone
             ]);
 
-            return $this->redirect('/tch/r', navigate: true);
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor actualizado correctamente.', tipo: 'success');
+            $this->updateTeachers();
+            $this->reset(['email', 'especialidad', 'fecha_contratacion', 'name', 'phone']);
         } catch (\Exception $th) {
             $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_UPDATE_ERROR);
         }
@@ -93,8 +94,9 @@ class Teacher extends Component
                 'created_at' => now(),
                 'updated_at' => null
             ]);
-            return $this->redirect('/tch/r',navigate:true); 
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor creado correctamente.', tipo: 'success');
+            $this->updateTeachers();
+            $this->reset(['email', 'especialidad', 'fecha_contratacion', 'name', 'phone']);
         } catch (\Exception $th) {
             $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_CREATE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_CREATE_ERROR);
         }
