@@ -42,8 +42,8 @@
                 @else
                     
                 @endif
-                <x-button class="ms-4" wire:click.prevent="{{ $teacherId ? 'update' : 'save' }}">
-                    {{ $teacherId ? __('Update') : __('Register') }}
+                <x-button class="ms-4" wire:click.prevent="{{ $totalPagar ? 'save' : '' }}">
+                    {{ $totalPagar ? __('Liquidar') : __('') }}
                 </x-button>
             </form>
         </section>

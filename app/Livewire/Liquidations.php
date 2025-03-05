@@ -11,6 +11,7 @@ use App\Models\Lesson;
 use App\Models\AcademyUser;
 use App\Models\StudentLesson;
 use App\Enums\ErrorCodes;
+use App\Models\TeacherPayment;
 
 class Liquidations extends Component
 {
@@ -47,6 +48,37 @@ class Liquidations extends Component
             })
             ->with('academyUsers.academy', 'state')
             ->get();
+    }
+
+    public function save(){
+        $this->validate([
+            'teacherId' => 'required',
+            'lessonId' => 'required',
+            'totalPagar' => 'required',
+            'monthLiquidation' => 'required',
+            'yearLiquidation' => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $teacherPayment = TeacherPayment::create([
+                'teacher_id' => $this->teacherId,
+                'payment_method_id' => $this->teacherSetting->first()->payment_method_id,
+                'amount' => $this->totalPagar,
+                'payment_date' => now(),
+                'lesson_id' => $this->lessonId,
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('mostrarAlerta', mensaje: 'Se registró liquidación correctamente.', tipo: 'success');
+            $this->teacherId = null;
+            $this->resetValues();
+        } catch (\Exception $th) {
+            DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_PAYMENT_SAVE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_PAYMENT_SAVE_ERROR);
+        }
     }
 
     //funcion que trae las clases dictadas por un profesor
@@ -189,6 +221,8 @@ class Liquidations extends Component
         ->join('schedules as s', 'p.schedule_id', '=', 's.id')
         ->join('lessons as l', 's.lesson_id', '=', 'l.id')
         ->where('l.id', $this->lessonId)
+        ->whereMonth('s.date', $this->monthLiquidation)
+        ->whereYear('s.date', $this->yearLiquidation)
         ->select('l.id', DB::raw('count(l.id) as lesson_count'))
         ->groupBy('l.id')
         ->get();
