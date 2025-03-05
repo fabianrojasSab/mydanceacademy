@@ -29,7 +29,11 @@ class Inscriptions extends Component
 
         $this->students = User::role('Estudiante')->whereHas('state', function ($query) {
             $query->where('id', '1'); // Filtra para el estado activo
-        })->get();;
+        })->whereHas('academyUsers.academy', function ($query) use ($academyId) {
+            $query->where('id', $academyId); // Filtra por el ID de la academia específica
+        })
+        ->with('academyUsers.academy', 'state')
+        ->get();
 
         $this->lessons = Lesson::where('academy_id', $academyId)
         ->where('state', 1) // Solo clases activas
@@ -54,18 +58,18 @@ class Inscriptions extends Component
         $this->inscriptionId = $inscription->id;
         $this->inscription_date = $inscription->inscription_date;
         $this->lesson_id = $inscription->lesson_id;
-        $this->student_id = $inscription->user_id;
+        $this->student_id = $inscription->student_id;
     }
 
     public function update()
     {
         try {
             DB::beginTransaction();
-            $inscription = ClaseUser::findOrFail($this->inscriptionId);
+            $inscription = StudentLesson::findOrFail($this->inscriptionId);
             $inscription->update([
                 'inscription_date' => $this->inscription_date,
                 'lesson_id' => $this->lesson_id,
-                'user_id' => $this->student_id
+                'student_id' => $this->student_id
             ]);
 
             DB::commit();
