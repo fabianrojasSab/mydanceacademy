@@ -9,6 +9,7 @@ use App\Models\AcademyUser;
 use App\Models\State;
 use App\Models\Role;
 use App\Models\Academy;
+use App\Enums\ErrorCodes;
 
 class Students extends Component
 {
@@ -44,7 +45,7 @@ class Students extends Component
             User::where('id', $id)->delete();
             return $this->redirect('/std/r', navigate: true);
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::STUDENT_DELETE_ERROR), tipo: 'error', code: ErrorCodes::STUDENT_DELETE_ERROR);
         }
     }
 
@@ -63,8 +64,8 @@ class Students extends Component
             $this->reset(['name', 'email', 'date_of_birth', 'phone', 'state_id', 'rol_id']);
             $this->dispatch('mostrarAlerta', mensaje: 'Usuario inactivado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::STUDENT_ACTIVE_ERROR), tipo: 'error', code: ErrorCodes::STUDENT_ACTIVE_ERROR);
         }
     }
 
@@ -100,8 +101,8 @@ class Students extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Usuario actualizado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::STUDENT_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::STUDENT_UPDATE_ERROR);
         }
     }
 
@@ -134,8 +135,8 @@ class Students extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Usuario creado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::STUDENT_CREATE_ERROR), tipo: 'error', code: ErrorCodes::STUDENT_CREATE_ERROR);
         }
     }
 

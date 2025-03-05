@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Academy;
 use App\Models\State;
+use App\Enums\ErrorCodes;
 
 class Academies extends Component
 {
@@ -34,7 +35,7 @@ class Academies extends Component
             Academy::where('id',$id)->delete();
             return $this->academies = Academy::all();
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ACADEMY_DELETE_ERROR), tipo: 'error', code: ErrorCodes::ACADEMY_DELETE_ERROR);
         }
     }
 
@@ -68,7 +69,8 @@ class Academies extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Academia actualizada correctamente.', tipo: 'success');
 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ACADEMY_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::ACADEMY_UPDATE_ERROR);
+            $this->reset(['name', 'address', 'phone', 'description', 'state_id', 'email']);
         }
     }
 
@@ -92,7 +94,7 @@ class Academies extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Academia creada correctamente.', tipo: 'success');
 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ACADEMY_CREATE_ERROR), tipo: 'error', code: ErrorCodes::ACADEMY_CREATE_ERROR);
         }
     }
 

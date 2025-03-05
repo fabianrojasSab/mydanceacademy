@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
+use App\Enums\ErrorCodes;
 
 class Permissions extends Component
 {
@@ -26,7 +27,7 @@ class Permissions extends Component
             Permission::where('id',$id)->delete();
             return $this->permissions = Permission::all();
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PERMISSION_DELETE_ERROR), tipo: 'error', code: ErrorCodes::PERMISSION_DELETE_ERROR);
         }
     }
 
@@ -52,7 +53,8 @@ class Permissions extends Component
             $this->reset(['name', 'guard_name']);
             $this->dispatch('mostrarAlerta', mensaje: 'Permiso actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PERMISSION_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::PERMISSION_UPDATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 
@@ -70,7 +72,8 @@ class Permissions extends Component
             $this->reset(['name', 'guard_name']);
             $this->dispatch('mostrarAlerta', mensaje: 'Permiso creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PERMISSION_CREATE_ERROR), tipo: 'error', code: ErrorCodes::PERMISSION_CREATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 

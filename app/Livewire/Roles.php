@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Role;
+use App\Enums\ErrorCodes;
 
 class Roles extends Component
 {
@@ -26,7 +27,7 @@ class Roles extends Component
             Role::where('id',$id)->delete();
             return $this->roles = Role::all();
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ROLE_DELETE_ERROR), tipo: 'error', code: ErrorCodes::ROLE_DELETE_ERROR);
         }
     }
 
@@ -52,7 +53,8 @@ class Roles extends Component
             $this->reset(['name', 'guard_name']);
             $this->dispatch('mostrarAlerta', mensaje: 'Rol actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ROLE_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::ROLE_UPDATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 
@@ -74,7 +76,8 @@ class Roles extends Component
             $this->reset(['name', 'guard_name']);
             $this->dispatch('mostrarAlerta', mensaje: 'Rol creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::ROLE_CREATE_ERROR), tipo: 'error', code: ErrorCodes::ROLE_CREATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 

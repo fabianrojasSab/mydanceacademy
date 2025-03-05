@@ -10,6 +10,7 @@ use App\Models\AcademyUser;
 use App\Models\StudentLesson;
 use Illuminate\Support\Facades\DB;
 use App\Models\PaymentMethod;
+use App\Enums\ErrorCodes;
 
 class Payments extends Component
 {
@@ -54,7 +55,7 @@ class Payments extends Component
             Pay::where('id',$id)->delete();
             return $this->redirect('/pym/r',navigate:true); 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PAYMENT_DELETE_ERROR), tipo: 'error', code: ErrorCodes::PAYMENT_DELETE_ERROR);
         }
     }
 
@@ -91,8 +92,9 @@ class Payments extends Component
             $this->reset(['name','description','date','amount','student_id','lesson_id']);
             $this->dispatch('mostrarAlerta', mensaje: 'Pago actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PAYMENT_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::PAYMENT_UPDATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 
@@ -114,8 +116,9 @@ class Payments extends Component
             $this->lessonsStudent = [];
             $this->dispatch('mostrarAlerta', mensaje: 'Pago registrado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::PAYMENT_CREATE_ERROR), tipo: 'error', code: ErrorCodes::PAYMENT_CREATE_ERROR);
+            $this->reset(['name','description','date','amount','student_id','lesson_id']);
         }
     }
 

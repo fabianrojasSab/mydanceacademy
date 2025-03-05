@@ -8,6 +8,7 @@ use App\Models\Presence;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ErrorCodes;
 
 class Schedules extends Component
 {
@@ -95,7 +96,8 @@ class Schedules extends Component
         }
         catch(\Exception $e){
             DB::rollBack();
-            $this->emit('error', $e->getMessage());
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::SCHEDULE_OTHER_ERROR), tipo: 'error', code: ErrorCodes::SCHEDULE_OTHER_ERROR);
+            $this->reset(['day', 'start_time', 'end_time', 'capacity', 'date', 'teacherId']);
         }
     }
 
@@ -130,7 +132,7 @@ class Schedules extends Component
         }
         catch(\Exception $e){
             DB::rollBack();
-            $this->dispatch('mostrarAlerta', mensaje: '¡Ha ocurrido un error!', tipo: 'error');
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::SCHEDULE_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::SCHEDULE_UPDATE_ERROR);
             $this->reset(['day', 'start_time', 'end_time', 'capacity', 'date', 'teacherId']);
         }
     }
@@ -170,7 +172,7 @@ class Schedules extends Component
         }
         catch(\Exception $e){
             DB::rollBack();
-            $this->emit('error', $e->getMessage());
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::SCHEDULE_DELETE_ERROR), tipo: 'error', code: ErrorCodes::SCHEDULE_DELETE_ERROR);
         }
     }
 

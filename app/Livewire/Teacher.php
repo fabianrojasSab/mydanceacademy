@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\AcademyUser;
+use App\Enums\ErrorCodes;
 
 class Teacher extends Component
 {
@@ -45,7 +46,7 @@ class Teacher extends Component
             Profesores::where('id',$id)->delete();
             return $this->redirect('/tch/r',navigate:true); 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_DELETE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_DELETE_ERROR);
         }
     }
 
@@ -76,7 +77,7 @@ class Teacher extends Component
             return $this->redirect('/tch/r', navigate: true);
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_UPDATE_ERROR);
         }
     }
 
@@ -95,7 +96,7 @@ class Teacher extends Component
             return $this->redirect('/tch/r',navigate:true); 
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_CREATE_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_CREATE_ERROR);
         }
     }
 
@@ -130,8 +131,8 @@ class Teacher extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor eliminado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_OTHER_ERROR), tipo: 'error', code: ErrorCodes::TEACHER_OTHER_ERROR);
         }
     }
 
@@ -146,8 +147,8 @@ class Teacher extends Component
             $this->dispatch('mostrarAlerta', mensaje: 'Profesor agregado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::TEACHER_OTHER_ERROR_2), tipo: 'error', code: ErrorCodes::TEACHER_OTHER_ERROR_2);
         }
     }
 

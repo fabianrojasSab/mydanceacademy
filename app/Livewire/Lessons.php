@@ -12,6 +12,7 @@ use App\Models\Schedule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Services;
 use App\Models\TeacherPayment;
+use App\Enums\ErrorCodes;
 
 class Lessons extends Component
 {
@@ -50,7 +51,7 @@ class Lessons extends Component
             Schedule::where('lesson_id',$id)->delete();
             return $this->redirect('/lsn/r',navigate:true); 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::LESSON_DELETE_ERROR), tipo: 'error', code: ErrorCodes::LESSON_DELETE_ERROR);
         }
     }
 
@@ -67,8 +68,8 @@ class Lessons extends Component
             $this->updateLessons();
             $this->dispatch('mostrarAlerta', mensaje: 'Clase inactivada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollback();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::LESSON_ACTIVE_ERROR), tipo: 'error', code: ErrorCodes::LESSON_ACTIVE_ERROR);
         }
     }
 
@@ -178,8 +179,9 @@ class Lessons extends Component
             $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
             $this->dispatch('mostrarAlerta', mensaje: 'Clase actualizada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollback();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::LESSON_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::LESSON_UPDATE_ERROR);
+            $this->reset(['name', 'description', 'duration', 'capacity', 'start_date', 'end_date', 'state_id', 'teacherId', 'selectedDays', 'start_time', 'end_time']);
         }
     }
     
@@ -234,8 +236,9 @@ class Lessons extends Component
             $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
             $this->dispatch('mostrarAlerta', mensaje: 'Clase creada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollback();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::LESSON_CREATE_ERROR), tipo: 'error', code: ErrorCodes::LESSON_CREATE_ERROR);
+            $this->reset(['name', 'description', 'duration', 'capacity', 'start_date', 'end_date', 'state_id', 'teacherId', 'selectedDays', 'start_time', 'end_time']);
         }
     }
 
@@ -300,8 +303,9 @@ class Lessons extends Component
                         $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
                         $this->dispatch('mostrarAlerta', mensaje: 'Horario reagendado correctamente.', tipo: 'success');
                     } catch (\Exception $th) {
-                        dd($th);
                         DB::rollback();
+                        $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::LESSON_OTHER_ERROR), tipo: 'error', code: ErrorCodes::LESSON_OTHER_ERROR);
+                        $this->reset(['name', 'description', 'duration', 'capacity', 'start_date', 'end_date', 'state_id', 'teacherId', 'selectedDays', 'start_time', 'end_time']);
                     }
                 }else{
                     $this->dispatch('mostrarAlerta', mensaje: 'No se puede agregar horarios, revise las fechas de inicio y fin.', tipo: 'error');

@@ -10,6 +10,7 @@ use App\Models\State;
 use App\Actions\Fortify\CreateNewUser;
 use App\Models\Academy;
 use App\Models\AcademyUser;
+use App\Enums\ErrorCodes;
 
 class Usuarios extends Component
 {
@@ -49,7 +50,7 @@ class Usuarios extends Component
             User::where('id',$id)->delete();
             return $this->redirect('/usr/r',navigate:true); 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::USER_DELETE_ERROR), tipo: 'error', code: ErrorCodes::USER_DELETE_ERROR);
         }
     }
 
@@ -96,8 +97,9 @@ class Usuarios extends Component
             $this->reset(['name','email','date_of_birth','phone','state_id','rol_id','academyId','password','password_confirmation']);
             $this->dispatch('mostrarAlerta', mensaje: 'Usuario actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::USER_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::USER_UPDATE_ERROR);
+            $this->reset(['name','email','date_of_birth','phone','state_id','rol_id','academyId','password','password_confirmation']);
         }
     }
 
@@ -136,8 +138,9 @@ class Usuarios extends Component
             $this->reset('name','email','date_of_birth','phone','state_id','password','password_confirmation','rol_id');
             $this->dispatch('mostrarAlerta', mensaje: 'Usuario creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::USER_CREATE_ERROR), tipo: 'error', code: ErrorCodes::USER_CREATE_ERROR);
+            $this->reset('name','email','date_of_birth','phone','state_id','password','password_confirmation','rol_id');
         }
     }
 

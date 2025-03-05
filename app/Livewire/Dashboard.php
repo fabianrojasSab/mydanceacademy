@@ -8,6 +8,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\State;
 use App\Models\Academy;
+use App\Enums\ErrorCodes;
 
 class Dashboard extends Component
 {

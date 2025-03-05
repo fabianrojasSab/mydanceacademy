@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Lesson;
 use App\Models\AcademyUser;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ErrorCodes;
 
 class Inscriptions extends Component
 {
@@ -42,7 +43,7 @@ class Inscriptions extends Component
             StudentLesson::where('id',$id)->delete();
             return $this->redirect('/ncp/r',navigate:true); 
         } catch (\Exception $th) {
-            dd($th);
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::INSCRIPTION_DELETE_ERROR), tipo: 'error', code: ErrorCodes::INSCRIPTION_DELETE_ERROR);
         }
     }
 
@@ -72,8 +73,9 @@ class Inscriptions extends Component
             $this->reset(['inscription_date','lesson_id','student_id']);
             $this->dispatch('mostrarAlerta', mensaje: 'Inscripción actualizada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::INSCRIPTION_UPDATE_ERROR), tipo: 'error', code: ErrorCodes::INSCRIPTION_UPDATE_ERROR);
+            $this->reset(['inscription_date','lesson_id','student_id']);
         }
     }
 
@@ -104,8 +106,9 @@ class Inscriptions extends Component
             $this->reset(['inscription_date','lesson_id','student_id']);
             $this->dispatch('mostrarAlerta', mensaje: 'Estudiante inscrito correctamente.', tipo: 'success');
         } catch (\Exception $th) {
-            dd($th);
             DB::rollBack();
+            $this->dispatch('mostrarAlerta', mensaje: __('errors.' . ErrorCodes::INSCRIPTION_CREATE_ERROR), tipo: 'error', code: ErrorCodes::INSCRIPTION_CREATE_ERROR);
+            $this->reset(['inscription_date','lesson_id','student_id']);
         }
     }
 
