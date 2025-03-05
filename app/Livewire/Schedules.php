@@ -150,7 +150,7 @@ class Schedules extends Component
             $endOfMonth = Carbon::now()->endOfMonth(); // Último día del mes
 
             // Obtener todas las clases programadas del mes actual ordenadas por fecha 
-            $this->schedules = Schedule::whereBetween('date', [$startOfMonth, $endOfMonth])->doesntHave('presences')->with('teachers')->orderBy('date', 'asc')->get();
+            $this->schedules = Schedule::doesntHave('presences')->with('teachers')->orderBy('date', 'asc')->get();
             
         }
     }
