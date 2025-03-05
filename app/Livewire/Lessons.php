@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Services;
+use App\Models\TeacherPayment;
 
 class Lessons extends Component
 {
@@ -31,6 +32,7 @@ class Lessons extends Component
     public $teacherId;
 
     public $selectedDays = []; // Para almacenar los días seleccionados
+    public $newSchedule = false; // Para saber si se está creando un nuevo horario
 
     public function mount()
     {
@@ -95,6 +97,26 @@ class Lessons extends Component
         $this->state_id = $lesson->state_id;
         $this->start_time = $schedule->start_time;
         $this->end_time = $schedule->end_time;
+    }
+
+    public function editSchedule($id)
+    {
+        //consulta la clase que se va a editar 
+        $lesson = Lesson::where('id', $id)->first();
+        //busca en la tabla schedule las clases que tengan el id de la clase
+        $schedule = Schedule::where('lesson_id', $id)->first();
+
+        //asigna los valores a las variables
+        $this->lessonId = $lesson->id;
+        $this->name = $lesson->name;
+        $this->description = $lesson->description;
+        $this->duration = $lesson->duration;
+        $this->capacity = $schedule->capacity;
+        $this->state_id = $lesson->state_id;
+        $this->start_time = $schedule->start_time;
+        $this->end_time = $schedule->end_time;
+
+        $this->newSchedule = true; // Indica que se está editando un horario
     }
 
     public function update()
@@ -214,6 +236,81 @@ class Lessons extends Component
         } catch (\Exception $th) {
             dd($th);
             DB::rollback();
+        }
+    }
+
+    //Funcion para agregar nuevo horario a la clase
+    public function addSchedule()
+    {
+        //consultar que todos los horarios fueron marcados como vistos
+        $countSchedules = Schedule::where('lesson_id', $this->lessonId)
+                    ->select(DB::raw('count(id) as schedule_count'))->get();
+
+        //consultar que todos los horarios fueron marcados como vistos
+        $countPresences = Schedule::with('presences')->where('lesson_id', $this->lessonId)
+                    ->select(DB::raw('count(id) as presence_count'))->get();
+
+        if ($countSchedules[0]->schedule_count == $countPresences[0]->presence_count) {
+            //consulta si el profesor ya fue liquidado
+            $teacherPay = TeacherPayment::where('lesson_id', $this->lessonId)->first();
+            //valida si $teacherPay tiene registros, para confirmar que el profesor fue liquidado
+            if ($teacherPay){
+                //consulta para ver que está fuera del rango de los horario que ya existen
+                $lesson = Lesson::where('id', $this->lessonId)->whereDate('end_date', '<=', $this->start_date)->first();
+                //valida si $lesson tiene registros
+                if ($lesson) {
+                    //crear el horario
+                    try {
+                        DB::beginTransaction();
+                        // Convertimos las fechas en Carbon para poder compararlas
+                        $startDate = Carbon::parse($this->start_date);
+                        $endDate = Carbon::parse($this->end_date);
+            
+                        // Iteramos por cada día de la semana seleccionado
+                        foreach ($this->selectedDays as $day) {
+                            // Empezamos desde la fecha de inicio para cada día seleccionado
+                            $current_date = $startDate->copy();
+            
+                            // Iteramos mientras la fecha actual no haya superado la fecha de fin
+                            while ($current_date <= $endDate) {
+                                // Si el día de la semana coincide con el día seleccionado
+                                if ($current_date->dayOfWeek === intval($day)) {
+                                    // Creamos la clase en la tabla schedule, asociada a la lesson
+                                    $schedule = Schedule::create([
+                                        'lesson_id' => $this->lessonId,
+                                        'teacher_id' => $this->teacherId,
+                                        'day' => $current_date->dayOfWeek,
+                                        'start_time' => $this->start_time,
+                                        'end_time' => $this->end_time,
+                                        'capacity' => $this->capacity,
+                                        'date' => $current_date->format('Y-m-d'),
+                                    ]);
+                                }
+                                // Avanzamos al siguiente día
+                                $current_date->addDay();
+                            }
+                        }
+                        //modificar la fecha fin de la clase
+                        $lesson->update([
+                            'end_date'=> $this->end_date
+                        ]);
+            
+                        DB::commit();
+                        $this->updateLessons();
+                        $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
+                        session()->flash('message', 'Clase creada correctamente.');
+                    } catch (\Exception $th) {
+                        dd($th);
+                        DB::rollback();
+                    }
+                }else{
+                    $this->dispatch('mostrarAlerta', mensaje: 'No se puede agregar horarios, revise las fechas de inicio y fin.', tipo: 'error');
+                }
+            }else{
+                $this->dispatch('mostrarAlerta', mensaje: 'No se puede agregar horarios a una clase que no ha sido liquidada.', tipo: 'error');
+            }
+        }else{
+            $this->dispatch('mostrarAlerta', mensaje: 'No se puede agregar horarios a una clase que ya tiene horarios programados.', tipo: 'error');
         }
     }
 

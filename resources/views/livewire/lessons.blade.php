@@ -87,8 +87,8 @@
                         @endforeach
                     </select>
                 </div>
-                <x-button class="ms-4" wire:click.prevent="{{ $lessonId ? 'update' : 'save' }}">
-                    {{ $lessonId ? __('Update') : __('Register') }}
+                <x-button class="ms-4" wire:click.prevent="{{ $newSchedule ? 'addSchedule' : ($lessonId ? 'update' : 'save') }}">
+                    {{ $newSchedule ? __('Nuevo horario') : ($lessonId ? __('Actualizar') : __('Registrar') )}}
                 </x-button>
             </form>
         </section>
@@ -155,7 +155,10 @@
                                             @endif
                                         </th>
                                         <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                            {{$lesson->schedule}}
+                                            <button wire:click="editSchedule({{ $lesson->id }})" 
+                                                class="bg-yellow-500 text-white active:bg-yellow-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                                Agendar
+                                            </button>
                                         </th>
                                         @hasanyrole('SuperAdmin')
                                             <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 

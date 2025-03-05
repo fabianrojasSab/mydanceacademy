@@ -26,9 +26,14 @@ class Liquidations extends Component
     public $infoShedule;
     public $teachersLesson;
     public $isPayShared;
+    public $monthLiquidation; 
+    public $yearLiquidation;
 
     public function mount()
     {
+        $this->monthLiquidation = date('m') - 1; // Mes anterior para liquidar
+        $this->yearLiquidation = date('Y');
+        
         $sessionUser = auth()->user()->id;
 
         $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
@@ -69,11 +74,14 @@ class Liquidations extends Component
     //funcionque consulta los estudiantes que se encontraban inscritos a las clases dictadas por el profesor
     public function getPreview()
     {
+        //consultar la cantidad de clases dictadas por el profesor
         $this->infoLesson = DB::table('presences as p')
         ->join('schedules as s', 'p.schedule_id', '=', 's.id')
         ->join('lessons as l', 's.lesson_id', '=', 'l.id')
         ->where('p.teacher_id', $this->teacherId)
         ->where('l.id', $this->lessonId)
+        ->whereMonth('s.date', $this->monthLiquidation)
+        ->whereYear('s.date', $this->yearLiquidation)
         ->select('l.id', 'l.name as name', DB::raw('count(l.id) as lesson_count'))
         ->groupBy('l.id', 'l.name')
         ->get();
@@ -82,20 +90,44 @@ class Liquidations extends Component
         $this->infoShedule = DB::table('schedules as s')
         ->join('lessons as l', 's.lesson_id', '=', 'l.id')
         ->where('l.id', $this->lessonId)
+        ->whereMonth('s.date', $this->monthLiquidation)
+        ->whereYear('s.date', $this->yearLiquidation)
         ->select('l.id', DB::raw('count(l.id) as schedule_count'))
         ->groupBy('l.id')
         ->get();
 
-        //consultar los estudiantes que estaban inscritos a las clases dictadas por los profesores
+        // Consultar los estudiantes que estaban inscritos y pagaron antes o durante las clases dictadas
         $this->lessons = StudentLesson::where('lesson_id', $this->lessonId)
-        ->with(['lesson.services'])
+        ->whereHas('student.studentPayments', function ($query) {// Filtrar pagos dentro del mes y año de liquidación
+            $query->whereMonth('payment_date', $this->monthLiquidation)
+                ->whereYear('payment_date', $this->yearLiquidation);
+        })
+        ->with(['lesson.services', 'student.studentPayments'])
         ->get()
         ->map(function ($sl) {
             return [
                 'student_id' => $sl->student_id,
                 'name' => $sl->student->name,
                 'price' => $sl->lesson->services->price ?? null,
+                'payment_date' => optional($sl->student->studentPayments->last())->payment_date, // Muestra la última fecha de pago
             ];
+        });
+
+        // Consulta la informacion de las clases dictadas por el profesor para comparar con la fecha de pago del estudiante
+        $dateShedule =  DB::table('presences as p')
+        ->join('schedules as s', 'p.schedule_id', '=', 's.id')
+        ->leftjoin('teacher_payments as tp', function($join) {
+                    $join->on('tp.lesson_id', '=', 's.lesson_id')
+                        ->on('tp.teacher_id', '=', 's.teacher_id'); // Segunda condición con AND
+                    })// Relación con los pagos de los profesores
+        ->where('p.teacher_id', $this->teacherId)
+        ->whereNull('tp.teacher_id')
+        ->select('s.lesson_id', 's.date')
+        ->get();
+
+        //comparar la fecha de la clase con la fecha de pago del estudiante, si la fecha de pago es menor o igual a la fecha de la clase se muestra el estudiante
+        $this->lessons = $this->lessons->filter(function ($lesson) use ($dateShedule) {
+            return $lesson['payment_date'] <= $dateShedule->pluck('date')->last();
         });
 
         //saca el total de dinero que se le debe al profesor
@@ -209,20 +241,26 @@ class Liquidations extends Component
         $this->teachersLesson = null;
         $this->teacherSetting = null;
         $this->isPayShared = false;
+        $this->totalByStudents = 0;
+        $this->adittionalValue = null;
+        $this->lessons = null;
         //clases de estudiantes
     }
 
     //funcion para capturar el evento de cambio de toggle clase compartida
     public function toggleIsPayShared()
     {
-        //reiniciar total a pagar
-        $this->totalPagar = 0;
-
-        if($this->isPayShared){
-            $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
-            $this->totalPagar = $this->totalPagar / count($this->teachersLesson);
-        } else {
-            $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
+        //validar si el total a pagar ya esta calculado
+        if($this->totalPagar == 0 ){
+            $this->isPayShared = false;
+            //genera mensaje indicando que no se ha calculado el total a pagar
+        }else{
+            if($this->isPayShared){
+                $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
+                $this->totalPagar = $this->totalPagar / count($this->teachersLesson);
+            } else {
+                $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
+            }
         }
     }
 
