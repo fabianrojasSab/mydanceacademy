@@ -74,6 +74,7 @@ class Teacher extends Component
             ]);
 
             return $this->redirect('/tch/r', navigate: true);
+            $this->dispatch('mostrarAlerta', mensaje: 'Profesor actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }
@@ -92,6 +93,7 @@ class Teacher extends Component
                 'updated_at' => null
             ]);
             return $this->redirect('/tch/r',navigate:true); 
+            $this->dispatch('mostrarAlerta', mensaje: 'Profesor creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }
@@ -125,6 +127,7 @@ class Teacher extends Component
             $teacher = User::findOrFail($id);
             $teacher->removeRole('Profesor');
             $this->updateTeachers();
+            $this->dispatch('mostrarAlerta', mensaje: 'Profesor eliminado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
             dd($th);
@@ -140,6 +143,7 @@ class Teacher extends Component
             $teacher = User::findOrFail($this->student_id); 
             $teacher->assignRole('Profesor');
             $this->updateTeachers();
+            $this->dispatch('mostrarAlerta', mensaje: 'Profesor agregado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
             dd($th);

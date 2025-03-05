@@ -70,6 +70,7 @@ class Inscriptions extends Component
             DB::commit();
             $this->updateInscriptions();
             $this->reset(['inscription_date','lesson_id','student_id']);
+            $this->dispatch('mostrarAlerta', mensaje: 'Inscripción actualizada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();
@@ -87,7 +88,7 @@ class Inscriptions extends Component
 
             //si ya esta inscrito no lo deja inscribirse
             if($inscrito){
-                session()->flash('message', 'El estudiante ya esta inscrito en esta clase.');
+                $this->dispatch('mostrarAlerta', mensaje: 'El estudiante ya esta inscrito en esta clase.', tipo: 'error');
                 DB::commit();
                 return;
             }
@@ -101,6 +102,7 @@ class Inscriptions extends Component
             DB::commit();
             $this->updateInscriptions();
             $this->reset(['inscription_date','lesson_id','student_id']);
+            $this->dispatch('mostrarAlerta', mensaje: 'Estudiante inscrito correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();

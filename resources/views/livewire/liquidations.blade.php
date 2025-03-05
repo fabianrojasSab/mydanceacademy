@@ -1,9 +1,4 @@
 <div class="grid lg:grid-cols-3 grid-cols-1 md:container md:mx-auto">
-    <div x-data="{ mostrar: false, mensaje: '' }" x-init="@this.on('mostrarAlerta', e => { mensaje = e.mensaje; mostrar = true; setTimeout(() => mostrar = false, 3000); })">
-        <div x-show="mostrar" class="bg-green-500 text-white p-3 rounded shadow">
-            <p x-text="mensaje"></p>
-        </div>
-    </div>
     <section class="lg:col-span-3 col-1 p-4">
         <div class="flex justify-end">
             <a href="{{ route('dashboard') }}" class="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
@@ -13,6 +8,7 @@
     </section>
     @hasanyrole('Administrador|SuperAdmin')
         <!-- Contenido para administradores -->
+            <livewire:alert />
             <form class="pt-6 px-9 pb-6 rounded-lg bg-white">
                 <div class="mb-7">
                     <h1 class="text-2xl text-center font-semibold text-gray-900 dark:text-white">Liquidacion de profesores</h1>

@@ -94,7 +94,7 @@ class Usuarios extends Component
             DB::commit();
             $this->updateUsers();
             $this->reset(['name','email','date_of_birth','phone','state_id','rol_id','academyId','password','password_confirmation']);
-            session()->flash('message', 'Usuario actualizado correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Usuario actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();
@@ -134,8 +134,7 @@ class Usuarios extends Component
             DB::commit();
             $this->updateUsers();
             $this->reset('name','email','date_of_birth','phone','state_id','password','password_confirmation','rol_id');
-            session()->flash('message', 'Usuario creado correctamente.');
-
+            $this->dispatch('mostrarAlerta', mensaje: 'Usuario creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();

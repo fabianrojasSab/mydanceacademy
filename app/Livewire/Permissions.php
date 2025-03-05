@@ -50,8 +50,7 @@ class Permissions extends Component
 
             $this->permissions = Permission::all();
             $this->reset(['name', 'guard_name']);
-            session()->flash('message', 'Permiso actualizado correctamente.');
-
+            $this->dispatch('mostrarAlerta', mensaje: 'Permiso actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }
@@ -69,8 +68,7 @@ class Permissions extends Component
 
             $this->permissions = Permission::all();
             $this->reset(['name', 'guard_name']);
-            session()->flash('message', 'Permiso creado correctamente.');
-
+            $this->dispatch('mostrarAlerta', mensaje: 'Permiso creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }

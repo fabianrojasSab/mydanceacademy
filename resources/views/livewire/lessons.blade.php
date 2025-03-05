@@ -10,6 +10,7 @@
     @hasanyrole('Administrador|SuperAdmin')
         <!-- Contenido para administradores -->
         <section class="lg:col-auto col-1 p-4">
+            <livewire:alert />
             <form class="pt-6 px-9 pb-6 rounded-lg bg-white">
                 <div class="mb-7">
                     <h1 class="text-2xl text-center font-semibold text-gray-900 dark:text-white">Registro de clases</h1>

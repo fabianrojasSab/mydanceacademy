@@ -91,6 +91,7 @@ class Schedules extends Component
             $this->toPresence = false;
             $this->reset(['day', 'start_time', 'end_time', 'capacity', 'date', 'teacherId']);
             $this->updateSchedules();
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase dictada correctamente.', tipo: 'success');
         }
         catch(\Exception $e){
             DB::rollBack();
@@ -125,10 +126,12 @@ class Schedules extends Component
             $this->toEdit = false;
             $this->reset(['day', 'start_time', 'end_time', 'capacity', 'date', 'teacherId']);
             $this->updateSchedules();
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase actualizada correctamente.', tipo: 'success');
         }
         catch(\Exception $e){
             DB::rollBack();
-            $this->emit('error', $e->getMessage());
+            $this->dispatch('mostrarAlerta', mensaje: '¡Ha ocurrido un error!', tipo: 'error');
+            $this->reset(['day', 'start_time', 'end_time', 'capacity', 'date', 'teacherId']);
         }
     }
 
@@ -163,6 +166,7 @@ class Schedules extends Component
             $schedule->delete();
             DB::commit();
             $this->updateSchedules();
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase eliminada correctamente.', tipo: 'success');
         }
         catch(\Exception $e){
             DB::rollBack();

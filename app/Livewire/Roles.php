@@ -50,8 +50,7 @@ class Roles extends Component
 
             $this->roles = Role::all();
             $this->reset(['name', 'guard_name']);
-            session()->flash('message', 'Rol actualizado correctamente.');
-
+            $this->dispatch('mostrarAlerta', mensaje: 'Rol actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }
@@ -73,8 +72,7 @@ class Roles extends Component
 
             $this->roles = Role::all();
             $this->reset(['name', 'guard_name']);
-            session()->flash('message', 'Rol creado correctamente.');
-
+            $this->dispatch('mostrarAlerta', mensaje: 'Rol creado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
         }

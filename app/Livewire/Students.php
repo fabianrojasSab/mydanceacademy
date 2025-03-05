@@ -61,7 +61,7 @@ class Students extends Component
             DB::commit();
             $this->updateStudents();
             $this->reset(['name', 'email', 'date_of_birth', 'phone', 'state_id', 'rol_id']);
-            session()->flash('message', 'Usuario inactivado correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Usuario inactivado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();
@@ -97,7 +97,7 @@ class Students extends Component
 
             $this->updateStudents();
             $this->reset(['name', 'email', 'date_of_birth', 'phone', 'state_id', 'rol_id', 'password', 'password_confirmation']);
-            session()->flash('message', 'Usuario actualizado correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Usuario actualizado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
             dd($th);
@@ -131,7 +131,7 @@ class Students extends Component
 
             $this->updateStudents();
             $this->reset(['name', 'email', 'date_of_birth', 'phone', 'state_id', 'rol_id', 'password', 'password_confirmation']);
-            session()->flash('message', 'Usuario creado correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Usuario creado correctamente.', tipo: 'success');
             DB::commit();
         } catch (\Exception $th) {
             dd($th);

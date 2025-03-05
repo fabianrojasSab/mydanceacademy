@@ -203,7 +203,7 @@ class Liquidations extends Component
                 $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
             }else{
                 //deshabilitar boton para liquidar
-                //alerta para indicar que no se han marcado las clases dictadas
+                $this->dispatch('mostrarAlerta', mensaje: 'No se han dictado todas las clases programadas.', tipo: 'warning');
                 $this->totalPagar = 0;
             }
         } else {
@@ -212,7 +212,7 @@ class Liquidations extends Component
                 //habilitar boton de liquidar
                 $this->totalPagar = $this->totalByStudents * $this->teacherSetting->first()->param_value;
             } else {
-                //si no es igual, deshabilitar boton de liquidar
+                $this->dispatch('mostrarAlerta', mensaje: 'No se han dictado todas las clases programadas.', tipo: 'warning');
                 $this->totalPagar = 0;
             }
         }

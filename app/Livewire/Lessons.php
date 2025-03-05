@@ -65,7 +65,7 @@ class Lessons extends Component
             ]);
             DB::commit();
             $this->updateLessons();
-            session()->flash('message', 'Clase inactivada correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase inactivada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollback();
@@ -176,7 +176,7 @@ class Lessons extends Component
             DB::commit();
             $this->updateLessons();
             $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
-            session()->flash('message', 'Clase actualizada correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase actualizada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollback();
@@ -232,7 +232,7 @@ class Lessons extends Component
             DB::commit();
             $this->updateLessons();
             $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
-            session()->flash('message', 'Clase creada correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Clase creada correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollback();
@@ -298,7 +298,7 @@ class Lessons extends Component
                         DB::commit();
                         $this->updateLessons();
                         $this->reset(['name','description','duration','capacity','start_date','end_date','state_id','teacherId','selectedDays','start_time','end_time']);
-                        session()->flash('message', 'Clase creada correctamente.');
+                        $this->dispatch('mostrarAlerta', mensaje: 'Horario reagendado correctamente.', tipo: 'success');
                     } catch (\Exception $th) {
                         dd($th);
                         DB::rollback();

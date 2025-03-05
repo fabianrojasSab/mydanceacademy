@@ -89,6 +89,7 @@ class Payments extends Component
             DB::commit();
             $this->updatePayments();
             $this->reset(['name','description','date','amount','student_id','lesson_id']);
+            $this->dispatch('mostrarAlerta', mensaje: 'Pago actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();
@@ -111,6 +112,7 @@ class Payments extends Component
             $this->updatePayments();
             $this->reset(['name','description','date','amount','student_id','lesson_id']);
             $this->lessonsStudent = [];
+            $this->dispatch('mostrarAlerta', mensaje: 'Pago registrado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             dd($th);
             DB::rollBack();

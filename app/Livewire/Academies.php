@@ -65,7 +65,7 @@ class Academies extends Component
 
             $this->academies = Academy::all();
             $this->reset(['name', 'address', 'phone', 'description', 'state_id', 'email']);
-            session()->flash('message', 'Academia actualizada correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Academia actualizada correctamente.', tipo: 'success');
 
         } catch (\Exception $th) {
             dd($th);
@@ -89,7 +89,7 @@ class Academies extends Component
 
             $this->academies = Academy::all();
             $this->reset(['name', 'address', 'phone', 'description', 'state_id', 'email']);
-            session()->flash('message', 'Academia creada correctamente.');
+            $this->dispatch('mostrarAlerta', mensaje: 'Academia creada correctamente.', tipo: 'success');
 
         } catch (\Exception $th) {
             dd($th);
