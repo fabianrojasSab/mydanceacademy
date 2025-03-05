@@ -118,7 +118,28 @@ class Inscriptions extends Component
 
     public function updateInscriptions()
     {
-        $this->inscriptions = StudentLesson::with('lesson','student')->get();
+        $sessionUser = auth()->user()->id;
+
+        if (User::find($sessionUser)->hasRole('Estudiante')) {
+
+        }
+        if (User::find($sessionUser)->hasRole('Profesor')) {
+
+        }
+        if (User::find($sessionUser)->hasRole('SuperAdmin')) {
+
+        }
+        else if (User::find($sessionUser)->hasRole('Administrador')){
+
+            //consulta las inscripcion de los estudiantes de la academia del usuario que inicia sesion
+            $sessionUser = auth()->user()->id;
+            $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
+            $this->inscriptions = StudentLesson::whereHas('student', function ($query) {
+                $query->where('state_id', 1); // Filtra para el estado activo
+            })->whereHas('lesson', function ($query) use ($academyId) {
+                $query->where('academy_id', $academyId); // Filtra por el ID de la academia específica
+            })->with('student', 'lesson')->get();
+        }
     }
 
     public function render()
