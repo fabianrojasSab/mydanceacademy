@@ -25,6 +25,7 @@ class Schedules extends Component
     public $toEdit = false;
     public $toPresence = false;
     public $selectedDays = []; // Para almacenar los días seleccionados
+    public $month; 
 
     public function mount()
     {
@@ -145,12 +146,11 @@ class Schedules extends Component
         }
         else if (User::find($sessionUser)->hasRole('Administrador')){
 
-            // Obtener las fechas de inicio y fin del mes actual
-            $startOfMonth = Carbon::now()->startOfMonth(); // Primer día del mes
-            $endOfMonth = Carbon::now()->endOfMonth(); // Último día del mes
-
-            // Obtener todas las clases programadas del mes actual ordenadas por fecha 
-            $this->schedules = Schedule::doesntHave('presences')->with('teachers')->orderBy('date', 'asc')->get();
+            // Obtener todas las clases programadas del mes actual ordenadas por fecha, teniendo en cuenta el mes seleccionado en $month y sin registros en presences
+            $this->schedules = Schedule::whereMonth('date', $this->month)
+            ->whereDoesntHave('presences')
+            ->orderBy('date')
+            ->get();
             
         }
     }
