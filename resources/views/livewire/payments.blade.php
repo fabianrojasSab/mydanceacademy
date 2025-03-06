@@ -39,7 +39,12 @@
                         </tr>
                     @endforeach
                 </select>
+                <div class="flex items-center">
+                    <input id="checked-checkbox" type="checkbox" value="" wire:model="is_pending" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="checked-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Pendiente de pago</label>
+                </div>
             </div>
+
             @if ($lessonsStudent)
                 <div class="relative z-0 w-full mb-5 group">
                     <label for="claseId" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent">Selecciona la clase</label>
@@ -96,7 +101,13 @@
                         @foreach ($payments as $payment)
                             <tr>
                                 <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                    {{$payment->description}}
+                                    {{$payment->description}}            
+                                    @if ($payment->is_pending == 1)
+                                        <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+                                            <span class="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
+                                            Debe mensualidad
+                                        </span>
+                                    @endif
                                 </th>
                                 <th  class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
                                     {{$payment->payment_date}}

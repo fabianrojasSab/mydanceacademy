@@ -43,6 +43,7 @@ return new class extends Migration
             $table->foreignId('service_id')->references('id')->on('services');
             $table->integer('amount');
             $table->date('payment_date');
+            $table->boolean('is_pending')->default(false);
         });
 
         //=============================> Tabla de pagos de profesores <=============================

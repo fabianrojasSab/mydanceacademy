@@ -25,9 +25,11 @@ class Payments extends Component
     public $students;
     public $lesson_id;
     public $service_id;
+    public $is_pending;
 
     public $lessonsStudent;
     public $paymentMethods;
+    public $paymentsPending;
 
     public function mount()
     {
@@ -77,6 +79,7 @@ class Payments extends Component
             $this->date = $pay->payment_date;
             $this->amount = $pay->amount;
             $this->student_id = $pay->student_id;
+            $this->is_pending = $pay->is_pending ? true : false;
         }
     }
 
@@ -90,11 +93,12 @@ class Payments extends Component
                 'payment_date' => $this->date,
                 'amount' => $this->amount,
                 'student_id' => $this->student_id,
+                'is_pending' => $this->is_pending
             ]);
 
             DB::commit();
             $this->updatePayments();
-            $this->reset(['name','description','date','amount','student_id','lesson_id']);
+            $this->reset(['name','description','date','amount','student_id','lesson_id','is_pending']);
             $this->dispatch('mostrarAlerta', mensaje: 'Pago actualizado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
             DB::rollBack();
@@ -112,12 +116,13 @@ class Payments extends Component
                 'payment_date' => $this->date,
                 'amount' => $this->amount,
                 'student_id' => $this->student_id,
-                'service_id' => $this->service_id
+                'service_id' => $this->service_id,
+                'is_pending' => $this->is_pending
             ]);
 
             DB::commit();
             $this->updatePayments();
-            $this->reset(['name','description','date','amount','student_id','lesson_id']);
+            $this->reset(['name','description','date','amount','student_id','lesson_id','is_pending']);
             $this->lessonsStudent = [];
             $this->dispatch('mostrarAlerta', mensaje: 'Pago registrado correctamente.', tipo: 'success');
         } catch (\Exception $th) {
@@ -148,6 +153,15 @@ class Payments extends Component
                 $query->where('id', $academyId);
             })
             ->with('user', 'paymentMethod')
+            ->orderBy('payment_date', 'desc')
+            ->get();
+
+            $this->paymentsPending = StudentPayment::whereHas('user.academyUsers.academy', function ($query) use ($academyId) {
+                $query->where('id', $academyId);
+            })
+            ->where('is_pending', 1)
+            ->with('user', 'paymentMethod')
+            ->orderBy('payment_date', 'desc')
             ->get();
         }
     }

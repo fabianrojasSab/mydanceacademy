@@ -14,7 +14,8 @@ class StudentPayment extends Model
         'service_id',
         'amount',
         'payment_date',
-        'description'
+        'description',
+        'is_pending'
     ];
 
     //La relacion BelongsTo indica que un pago pertenece a un usuario
