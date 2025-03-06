@@ -46,61 +46,95 @@
             <div class="h-full pt-6 px-2 rounded-lg bg-white">
                 <div class="rounded-t mb-0 px-4 py-3 border-0">
                     <div class="flex flex-wrap items-center">
-                        <div class="relative w-full px-4 max-w-full flex-grow flex-1">
-                            <h3 class="font-semibold text-base text-blueGray-700">listado de inscripciones</h3>
+                        <div x-data="{ allStudents: @entangle('allStudents') }" class="relative w-full px-4 max-w-full flex-grow flex-1">
+                            <h3 class="text-xl font-bold leading-none text-gray-900 dark:text-white">listado de inscripciones</h3>
+                            <a @click="allStudents = !allStudents" wire:click="getAllStudentsInscriptions()" 
+                            class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+                                Ver todos
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="relative overflow-x-auto">
-                    <table id="search-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    ESTUDIANTE
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    CLASE
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    FECHA DE INSCRIPCION
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    ACCIONES
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($inscriptions as $inscription)
-                                <tr>
-                                    {{-- <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                        @forelse ($inscription->users as $user)
-                                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300">{{ $user->name }}</span>
-                                        @empty
-                                            <span>Rol no encontrado</span>
-                                        @endforelse
-                                    </th> --}}
-                                    <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                        {{ $inscription->student ? $inscription->student->name : 'Estudiante no encontrado' }}
-                                    </th>
-                                    <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                        {{ $inscription->lesson ? $inscription->lesson->name : 'Clase no encontrada' }}
-                                    </th>
-                                    <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 "> 
-                                        {{$inscription->inscription_date}}
-                                    </th>
-                                    <th class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 ">
-                                        <x-danger-button wire:click="delete({{ $inscription->id }})"  wire:confirm="Are you sure you want to delete this post?" class="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                            type="submit">Eliminar</x-danger-button>
-                                        <button wire:click="edit({{ $inscription->id }})" 
-                                            class="bg-yellow-500 text-white active:bg-yellow-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-                                            Editar
-                                        </button>
-                                    </th>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="grid lg:grid-cols-2 grid-cols-1 transition rounded-xl cursor-pointer animate__animated animate__fadeInUp ">
+                    @if($allStudents == false)
+                        @foreach ($inscriptions as $inscription)
+                            <div class="w-full max-w-md p-6 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700 shadow-lg p-6  rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">{{ $inscription->name ? $inscription->name : 'Clase no encontrado' }}</h5>
+                                        <a wire:click="getInscriptions({{ $inscription->id }})" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+                                            Ver todos
+                                        </a>
+                                </div>
+                                <div class="flow-root">
+                                    @if ($studentsByLesson == false)
+                                    @else
+                                        @foreach ($inscription->inscriptions as $student)
+                                            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                <li class="py-3 sm:py-4">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-1 min-w-0 ms-4">
+                                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                                {{ $student->student ? $student->student->name : 'Estudiante no encontrado' }}
+                                                            </p>
+                                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                                {{ $student->student ? $student->student->email : 'Correo no encontrado' }}
+                                                            </p>
+                                                        </div>
+                                                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                                            <Button wire:click="delete({{ $inscription->id }})"  wire:confirm="Are you sure you want to delete this post?" class="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                                type="submit">Eliminar</Button>
+                                                            <button wire:click="edit({{ $inscription->id }})" 
+                                                                class="bg-yellow-500 text-white active:bg-yellow-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                                                Editar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        @foreach ($inscriptions as $inscription)
+                            <div class="w-full max-w-md p-6 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700 shadow-lg p-6  rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">{{ $inscription->name ? $inscription->name : 'Clase no encontrado' }}</h5>
+                                        <a wire:click="getInscriptions({{ $inscription->id }})" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+                                            Ver todos
+                                        </a>
+                                </div>
+                                <div class="flow-root">
+                                    @foreach ($inscription->inscriptions as $student)
+                                        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                            <li class="py-3 sm:py-4">
+                                                <div class="flex items-center">
+                                                    <div class="flex-1 min-w-0 ms-4">
+                                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                            {{ $student->student ? $student->student->name : 'Estudiante no encontrado' }}
+                                                        </p>
+                                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                            {{ $student->student ? $student->student->email : 'Correo no encontrado' }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                                        <Button wire:click="delete({{ $inscription->id }})"  wire:confirm="Are you sure you want to delete this post?" class="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                            type="submit">Eliminar</Button>
+                                                        <button wire:click="edit({{ $inscription->id }})" 
+                                                            class="bg-yellow-500 text-white active:bg-yellow-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                                            Editar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </section> 

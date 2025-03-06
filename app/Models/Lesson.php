@@ -49,4 +49,9 @@ class Lesson extends Model
     {
         return self::belongsTo(Service::class, 'service_id');
     }
+
+    public function inscriptions()
+    {
+        return $this->hasMany(StudentLesson::class, 'lesson_id');
+    }
 }

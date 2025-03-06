@@ -20,9 +20,13 @@ class Inscriptions extends Component
     public $inscriptionId;
     public $students;
     public $lessons;
+    public $studentsByLesson;
+    public $allStudents;
 
     public function mount()
-    {
+    {   
+        $this->allStudents = false;
+        $this->studentsByLesson = false;
         $sessionUser = auth()->user()->id;
         // Obtener la academia asociada al usuario
         $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
@@ -134,12 +138,44 @@ class Inscriptions extends Component
             //consulta las inscripcion de los estudiantes de la academia del usuario que inicia sesion
             $sessionUser = auth()->user()->id;
             $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
-            $this->inscriptions = StudentLesson::whereHas('student', function ($query) {
-                $query->where('state_id', 1); // Filtra para el estado activo
-            })->whereHas('lesson', function ($query) use ($academyId) {
-                $query->where('academy_id', $academyId); // Filtra por el ID de la academia específica
-            })->with('student', 'lesson')->get();
+            //consulta que me trae las lessons activas de la academia con los estudiantes inscritos
+            $this->inscriptions = Lesson::where('academy_id', $academyId)
+            ->where('state', 1) // Solo clases activas
+            ->get();
         }
+    }
+    
+    //funcion que me muestra los estudiantes inscritos en una clase especifica
+    public function getInscriptions($id)
+    {
+        $sessionUser = auth()->user()->id;
+        $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
+
+        $this->studentsByLesson = true;
+
+        $this->inscriptions = Lesson::where('academy_id', $academyId)
+        ->where('state', 1) // Solo clases activas
+        ->with('inscriptions', function ($query) use ($id) {
+            $query->where('lesson_id', $id); // Filtra por el ID de la academia específica
+        }, 'inscriptions.student')
+        ->get();
+
+        // Verificar si TODAS las clases no tienen inscripciones
+        if ($this->inscriptions->every(fn($lesson) => $lesson->inscriptions->isEmpty())) {
+            $this->dispatch('mostrarAlerta', mensaje: 'No hay estudiantes inscritos en ninguna de estas clases.', tipo: 'info');
+        }
+    }
+
+    public function getAllStudentsInscriptions(){
+        $sessionUser = auth()->user()->id;
+        $academyId = AcademyUser::where('user_id', $sessionUser)->first()->academy_id;
+        
+        $this->allStudents = true;
+        $this->studentsByLesson = false;
+        $this->inscriptions = Lesson::where('academy_id', $academyId)
+        ->where('state', 1) // Solo clases activas
+        ->with('inscriptions.student')
+        ->get();
     }
 
     public function render()
