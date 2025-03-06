@@ -39,6 +39,11 @@ class Students extends Component
         $this->roles = Role::where('name', 'Estudiante')->get();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function delete($id)
     {
         try {

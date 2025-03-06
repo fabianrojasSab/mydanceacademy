@@ -40,6 +40,11 @@ class Teacher extends Component
             ->get();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function delete($id)
     {
         try {

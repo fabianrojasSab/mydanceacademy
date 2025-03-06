@@ -45,6 +45,11 @@ class Inscriptions extends Component
         $this->updateInscriptions();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function delete($id)
     {
         try {

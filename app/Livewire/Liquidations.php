@@ -50,6 +50,11 @@ class Liquidations extends Component
             ->get();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function save(){
         $this->validate([
             'teacherId' => 'required',

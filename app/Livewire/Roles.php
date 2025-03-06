@@ -21,6 +21,11 @@ class Roles extends Component
         $this->roles = Role::all();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function delete($id)
     {
         try {

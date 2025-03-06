@@ -37,6 +37,11 @@ class Schedules extends Component
         })->get();
     }
 
+    public function placeholder()
+    {
+        return view('livewire.placeholders.skeleton');
+    }
+
     public function edit($id)
     {
         $this->toPresence = false;

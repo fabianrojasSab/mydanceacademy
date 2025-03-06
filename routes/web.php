@@ -34,38 +34,38 @@ Route::middleware([
 
 // Prefijo para usuarios
     Route::prefix('usr')->group(function () {
-        Route::get('r', Usuarios::class)->name('usr.r'); // Leer usuarios
+        Route::get('r', Usuarios::class)->lazy()->name('usr.r'); // Leer usuarios
         Route::post('c', [Usuarios::class, 'save'])->name('usr.c'); // Crear usuario
     });
 
 // Prefijo para los usuarios de tipo maestro
     Route::prefix('tch')->group(function () {
-        Route::get('r', Teacher::class)->name('tch.r'); 
+        Route::get('r', Teacher::class)->lazy()->name('tch.r'); 
     });
 
 // Prefijo para los pagos
     Route::prefix('pym')->group(function () {
-        Route::get('r', Payments::class)->name('pym.r'); 
+        Route::get('r', Payments::class)->lazy()->name('pym.r'); 
     });
 
 // Prefijo para las clases de baile
     Route::prefix('lsn')->group(function () {
-        Route::get('r', Lessons::class)->name('lsn.r'); 
+        Route::get('r', Lessons::class)->lazy()->name('lsn.r'); 
     });
 
 //Prefijo para horarios
     Route::prefix('sch')->group(function () {
-        Route::get('r', Schedules::class)->name('sch.r'); 
+        Route::get('r', Schedules::class)->lazy()->name('sch.r'); 
     });
 
 // Prefijo para los estudiantes
     Route::prefix('std')->group(function () {
-        Route::get('r', Students::class)->name('std.r'); 
+        Route::get('r', Students::class)->lazy()->name('std.r'); 
     });
 
 // Prefijo para las isncrpciones
     Route::prefix('ncp')->group(function () {
-        Route::get('r', Inscriptions::class)->name('ncp.r'); 
+        Route::get('r', Inscriptions::class)->lazy()->name('ncp.r'); 
     });
 
 // Prefijo para la dashboard
@@ -76,12 +76,12 @@ Route::middleware([
 
 // Prefijo para los roles
     Route::prefix('rl')->group(function () {
-        Route::get('r', Roles::class)->name('rl.r'); 
+        Route::get('r', Roles::class)->lazy()->name('rl.r'); 
     });
 
 // Prefijo para las liquidaciones
     Route::prefix('lqd')->group(function () {
-        Route::get('r', Liquidations::class)->name('lqd.r'); 
+        Route::get('r', Liquidations::class)->lazy()->name('lqd.r'); 
     });
 
 });
