@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>BailaPro</title>
+        <title>My dance academy</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -21,6 +21,8 @@
         
         {{-- Icon --}}
         <link rel='icon' type='image/ico' href="{{ asset('img/Logo.jpg')}}">
+
+        {{-- Animations --}}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
     </head>
