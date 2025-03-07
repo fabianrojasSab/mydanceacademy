@@ -80,10 +80,21 @@ class Lessons extends Component
 
     public function edit($id)
     {
+        $this->selectedDays = [];
+        $this->newSchedule = false; 
+
         //consulta la clase que se va a editar 
         $lesson = Lesson::where('id', $id)->first();
         //busca en la tabla schedule las clases que tengan el id de la clase
         $schedule = Schedule::where('lesson_id', $id)->first();
+
+        //valida si $schedule viene vacia para asignarle un valor
+        if (!$schedule) {
+            $schedule = new Schedule();
+            $schedule->capacity = 0;
+            $schedule->start_time = '00:00';
+            $schedule->end_time = '00:00';
+        }
 
         //recorre la lista de dias de la semana que se imparte la clase, agruppados por dia
         $days = Schedule::where('lesson_id', $id)->get()->groupBy('day');
@@ -107,10 +118,19 @@ class Lessons extends Component
 
     public function editSchedule($id)
     {
+        $this->selectedDays = [];
+        
         //consulta la clase que se va a editar 
         $lesson = Lesson::where('id', $id)->first();
         //busca en la tabla schedule las clases que tengan el id de la clase
         $schedule = Schedule::where('lesson_id', $id)->first();
+
+        if (!$schedule) {
+            $schedule = new Schedule();
+            $schedule->capacity = 0;
+            $schedule->start_time = '00:00';
+            $schedule->end_time = '00:00';
+        }
 
         //asigna los valores a las variables
         $this->lessonId = $lesson->id;

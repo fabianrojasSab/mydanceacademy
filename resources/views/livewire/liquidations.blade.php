@@ -8,8 +8,8 @@
     </section>
     @hasanyrole('Administrador|SuperAdmin')
         <!-- Contenido para administradores -->
-            <livewire:alert />
-            <form class="pt-6 px-9 pb-6 rounded-lg bg-white">
+        <form class="pt-6 px-9 pb-6 rounded-lg bg-white">
+                <livewire:alert />
                 <div class="mb-7">
                     <h1 class="text-2xl text-center font-semibold text-gray-900 dark:text-white">Liquidacion de profesores</h1>
                 </div>
